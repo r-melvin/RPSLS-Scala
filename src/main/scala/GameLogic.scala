@@ -1,3 +1,5 @@
+import models._
+
 import scala.annotation.tailrec
 
 /**
@@ -10,9 +12,7 @@ object GameLogic {
   var won_matches = 0
   var lost_matches = 0
 
-  sealed trait GameResult
-
- def draw(): Unit = {
+  def draw(): Unit = {
     println("\nYou have tied this match.\nReplay the match.\n")
     beginGame()
     tied_matches += 1
@@ -26,6 +26,12 @@ object GameLogic {
   def lose(): Unit = {
     println("\nYou have lost this match")
     lost_matches += 1
+  }
+
+  def handleResult(result: GameResult): Unit = result match {
+    case Draw => draw()
+    case Win => win()
+    case Lose => lose()
   }
 
   def computerMove(): GameChoice = {
@@ -69,60 +75,6 @@ object GameLogic {
     }
   }
 
-  sealed trait GameChoice {
-    def vs(choice: GameChoice): Unit
-  }
-
-  object GameChoice {
-    def apply(str: String): Option[GameChoice] = str match {
-      case "Rock" => Some(Rock)
-      case "Scissors" => Some(Scissors)
-      case "Paper" => Some(Paper)
-      case "Lizard" => Some(Lizard)
-      case "Spock" => Some(Spock)
-      case _ => None
-    }
-  }
-
-  case object Rock extends GameChoice {
-    def vs(choice: GameChoice): Unit = choice match {
-      case Scissors | Lizard => win()
-      case Rock => draw()
-      case _ => lose()
-    }
-  }
-
-  case object Paper extends GameChoice {
-    def vs(choice: GameChoice): Unit = choice match {
-      case Rock | Spock => win()
-      case Paper => draw()
-      case _ => lose()
-    }
-  }
-
-  case object Scissors extends GameChoice {
-    def vs(choice: GameChoice): Unit = choice match {
-      case Paper | Lizard => win()
-      case Scissors => draw()
-      case _ => lose()
-    }
-  }
-
-  case object Lizard extends GameChoice {
-    def vs(choice: GameChoice): Unit = choice match {
-      case Paper | Spock => win()
-      case Lizard => draw()
-      case _ => lose()
-    }
-  }
-
-  case object Spock extends GameChoice {
-    def vs(choice: GameChoice): Unit = choice match {
-      case Rock | Scissors => win()
-      case Spock => draw()
-      case _ => lose()
-    }
-  }
 
   @tailrec
   def beginGame(): Unit = {
@@ -132,7 +84,7 @@ object GameLogic {
       case Some(userChoice) =>
         val compChoice = computerMove()
         println(s"You have chosen $userChoice.\nThe computer has chosen $compChoice.")
-        userChoice.vs(compChoice)
+        handleResult(userChoice.vs(compChoice))
       case None => beginGame()
     }
   }
