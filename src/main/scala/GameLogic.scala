@@ -1,10 +1,6 @@
 import models._
-
 import scala.annotation.tailrec
 
-/**
-  * Created by richardmelvin on 14/06/18.
-  */
 object GameLogic {
 
   val input = scala.io.StdIn
@@ -74,7 +70,6 @@ object GameLogic {
       playAgain()
     }
   }
-
 
   @tailrec
   def beginGame(): Unit = {
