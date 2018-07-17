@@ -4,31 +4,6 @@ import scala.annotation.tailrec
 object GameLogic {
 
   val input = scala.io.StdIn
-  var tied_matches = 0
-  var won_matches = 0
-  var lost_matches = 0
-
-  def draw(): Unit = {
-    println("\nYou have tied this match.\nReplay the match.\n")
-    beginGame()
-    tied_matches += 1
-  }
-
-  def win(): Unit = {
-    println("\nYou have won this match")
-    won_matches += 1
-  }
-
-  def lose(): Unit = {
-    println("\nYou have lost this match")
-    lost_matches += 1
-  }
-
-  def handleResult(result: GameResult): Unit = result match {
-    case Draw => draw()
-    case Win => win()
-    case Lose => lose()
-  }
 
   def computerMove(): GameChoice = {
     val rnd = scala.util.Random.nextInt(5)
@@ -41,34 +16,36 @@ object GameLogic {
     }
   }
 
-  def printMatchResults(): Unit = {
-    println(s"\nYou have won $won_matches matches in this series")
-    println(s"You have lost $lost_matches matches in this series")
-    println(s"You have tied $tied_matches matches in this series")
+  def singleGame(): Unit = {
+    beginGame()
+    playAgain()
+  }
+
+  def seriesOfGames(): Unit = {
+    println("Would you like to play best of 3, 5 or 7")
+    val best_of_choice = input.readInt()
+    best_of_choice match {
+      case 3 => for (i <- 1 to 3) if (Outcomes.won_matches <= 2 && Outcomes.lost_matches <= 2) {
+        beginGame()
+      }
+      case 5 => for (i <- 1 to 5) if (Outcomes.won_matches <= 3 && Outcomes.lost_matches <= 3) {
+        beginGame()
+      }
+      case 7 => for (i <- 1 to 7) if (Outcomes.won_matches <= 4 && Outcomes.lost_matches <= 4) {
+        beginGame()
+      }
+    }
   }
 
   def gameMode(): Unit = {
     println("Welcome to Rock, Paper, Scissors, Lizard, Spock.\nWould you like to play a single match or a series?")
     if (input.readLine().contains("single")) {
-      beginGame()
-      playAgain()
+      singleGame()
     } else {
-      println("Would you like to play best of 3, 5 or 7")
-      val best_of_choice = input.readInt()
-      best_of_choice match {
-        case 3 => for (i <- 1 to 3) if (won_matches <= 2 && lost_matches <= 2) {
-          beginGame()
-        }
-        case 5 => for (i <- 1 to 5) if (won_matches <= 3 && lost_matches <= 3) {
-          beginGame()
-        }
-        case 7 => for (i <- 1 to 7) if (won_matches <= 4 && lost_matches <= 4) {
-          beginGame()
-        }
-      }
-      printMatchResults()
-      playAgain()
+      seriesOfGames()
     }
+    Outcomes.printMatchResults()
+    playAgain()
   }
 
   @tailrec
@@ -79,7 +56,11 @@ object GameLogic {
       case Some(userChoice) =>
         val compChoice = computerMove()
         println(s"You have chosen $userChoice.\nThe computer has chosen $compChoice.")
-        handleResult(userChoice.vs(compChoice))
+        val decision = userChoice.vs(compChoice)
+        decision match {
+          case Draw => Outcomes.draw(); singleGame()
+          case _ => Outcomes.handleResult(decision)
+        }
       case None => beginGame()
     }
   }
@@ -88,9 +69,9 @@ object GameLogic {
     print("\nWould you like to play again?\n")
     val replay_choice = input.readLine().toLowerCase
     if (replay_choice == "yes") {
-      won_matches = 0
-      lost_matches = 0
-      tied_matches = 0
+      Outcomes.won_matches = 0
+      Outcomes.lost_matches = 0
+      Outcomes.tied_matches = 0
       gameMode()
     } else {
       println("\nGoodbye, thanks for playing.")
