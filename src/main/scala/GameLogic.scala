@@ -25,16 +25,17 @@ object GameLogic {
     println("Would you like to play best of 3, 5 or 7")
     val best_of_choice = input.readInt()
     best_of_choice match {
-      case 3 => for (i <- 1 to 3) if (Outcomes.won_matches <= 2 && Outcomes.lost_matches <= 2) {
+      case 3 => for (i <- 1 to 3) if (Outcomes.won_matches < 2 && Outcomes.lost_matches < 2) {
         beginGame()
       }
-      case 5 => for (i <- 1 to 5) if (Outcomes.won_matches <= 3 && Outcomes.lost_matches <= 3) {
+      case 5 => for (i <- 1 to 5) if (Outcomes.won_matches < 3 && Outcomes.lost_matches < 3) {
         beginGame()
       }
-      case 7 => for (i <- 1 to 7) if (Outcomes.won_matches <= 4 && Outcomes.lost_matches <= 4) {
+      case 7 => for (i <- 1 to 7) if (Outcomes.won_matches < 4 && Outcomes.lost_matches < 4) {
         beginGame()
       }
     }
+    Outcomes.printMatchResults()
   }
 
   def gameMode(): Unit = {
@@ -44,7 +45,6 @@ object GameLogic {
     } else {
       seriesOfGames()
     }
-    Outcomes.printMatchResults()
     playAgain()
   }
 
