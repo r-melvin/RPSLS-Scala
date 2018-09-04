@@ -6,12 +6,26 @@ sealed trait GameChoice {
 
 object GameChoice {
   def apply(str: String): Option[GameChoice] = str match {
-    case "Rock" => Some(Rock)
-    case "Scissors" => Some(Scissors)
-    case "Paper" => Some(Paper)
-    case "Lizard" => Some(Lizard)
-    case "Spock" => Some(Spock)
-    case _ => None
+    case "rock" => Some(Rock)
+    case "scissors" => Some(Scissors)
+    case "paper" => Some(Paper)
+    case "lizard" => Some(Lizard)
+    case "spock" => Some(Spock)
+    case _ => Some(Invalid)
+  }
+}
+
+case object ComputerMove {
+  def moveSelection(): GameChoice = {
+    val rnd = scala.util.Random.nextInt(5)
+    rnd match {
+      case 0 => Rock
+      case 1 => Paper
+      case 2 => Scissors
+      case 3 => Lizard
+      case 4 => Spock
+      case _ => Invalid
+    }
   }
 }
 
@@ -51,6 +65,12 @@ case object Spock extends GameChoice {
   def vs(choice: GameChoice): GameResult = choice match {
     case Rock | Scissors => Win
     case Spock => Draw
+    case _ => Lose
+  }
+}
+
+case object Invalid extends GameChoice {
+  def vs(choice: GameChoice): GameResult = choice match {
     case _ => Lose
   }
 }

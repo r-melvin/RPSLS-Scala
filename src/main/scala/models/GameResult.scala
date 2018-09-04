@@ -8,34 +8,27 @@ case object Win extends GameResult
 
 case object Lose extends GameResult
 
-  object Outcomes {
-    var tied_matches = 0
-    var won_matches = 0
-    var lost_matches = 0
+object GameScore {
 
-    def draw(): Unit = {
+  var wonMatches = 0
+  var lostMatches = 0
+  var tiedMatches = 0
+
+  def handleResult(gameResult: GameResult): Unit = gameResult match {
+    case Draw =>
       println("\nYou have tied this match.\nReplay the match.\n")
-      tied_matches += 1
-    }
-
-    def win(): Unit = {
+      tiedMatches += 1
+    case Win =>
       println("\nYou have won this match")
-      won_matches += 1
-    }
-
-    def lose(): Unit = {
-      println("\nYou have lost this match")
-      lost_matches += 1
-    }
-
-    def handleResult(result: GameResult): Unit = result match {
-      case Draw => draw()
-      case Win => win()
-      case Lose => lose()
-    }
-    def printMatchResults(): Unit = {
-      println(s"\nYou have won $won_matches matches in this series")
-      println(s"You have lost $lost_matches matches in this series")
-      println(s"You have tied $tied_matches matches in this series")
-    }
+      wonMatches += 1
+    case Lose =>
+      println("You have lost this match")
+      lostMatches += 1
   }
+
+  def printMatchResults(): Unit = {
+    println(s"\nYou have won $wonMatches matches in this series")
+    println(s"You have lost $lostMatches matches in this series")
+    println(s"You have tied $tiedMatches matches in this series")
+  }
+}
