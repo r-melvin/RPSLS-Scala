@@ -1,23 +1,38 @@
 package models
 
+
+sealed trait GameResult
+
+case object Draw extends GameResult
+
+case object Win extends GameResult
+
+case object Lose extends GameResult
+
+case object Forfeit extends GameResult
+
+
+case class Metrics(matchesWon: Int, matchesTied: Int, matchesLost: Int)
+
+
 sealed trait GameChoice {
   def vs(choice: GameChoice): GameResult
 }
 
-object GameChoice {
-  def apply(str: String): Option[GameChoice] = str match {
-    case "rock" => Some(Rock)
-    case "scissors" => Some(Scissors)
-    case "paper" => Some(Paper)
-    case "lizard" => Some(Lizard)
-    case "spock" => Some(Spock)
-    case _ => Some(Invalid)
+object UserMove {
+  def apply(str: String): GameChoice = str match {
+    case "rock" => Rock
+    case "scissors" => Scissors
+    case "paper" => Paper
+    case "lizard" => Lizard
+    case "spock" => Spock
+    case _ => Invalid
   }
 }
 
-case object ComputerMove {
+object ComputerMove {
   def moveSelection(): GameChoice = {
-    val rnd = scala.util.Random.nextInt(5)
+    val rnd = 0 //scala.util.Random.nextInt(5)
     rnd match {
       case 0 => Rock
       case 1 => Paper
@@ -33,7 +48,8 @@ case object Rock extends GameChoice {
   def vs(choice: GameChoice): GameResult = choice match {
     case Scissors | Lizard => Win
     case Rock => Draw
-    case _ => Lose
+    case Paper | Spock => Lose
+    case _ => Forfeit
   }
 }
 
@@ -41,7 +57,8 @@ case object Paper extends GameChoice {
   def vs(choice: GameChoice): GameResult = choice match {
     case Rock | Spock => Win
     case Paper => Draw
-    case _ => Lose
+    case Scissors | Lizard => Lose
+    case _ => Forfeit
   }
 }
 
@@ -49,7 +66,8 @@ case object Scissors extends GameChoice {
   def vs(choice: GameChoice): GameResult = choice match {
     case Paper | Lizard => Win
     case Scissors => Draw
-    case _ => Lose
+    case Rock | Spock => Lose
+    case _ => Forfeit
   }
 }
 
@@ -57,7 +75,8 @@ case object Lizard extends GameChoice {
   def vs(choice: GameChoice): GameResult = choice match {
     case Paper | Spock => Win
     case Lizard => Draw
-    case _ => Lose
+    case Scissors | Rock => Lose
+    case _ => Forfeit
   }
 }
 
@@ -65,12 +84,13 @@ case object Spock extends GameChoice {
   def vs(choice: GameChoice): GameResult = choice match {
     case Rock | Scissors => Win
     case Spock => Draw
-    case _ => Lose
+    case Lizard | Paper => Lose
+    case _ => Forfeit
   }
 }
 
 case object Invalid extends GameChoice {
   def vs(choice: GameChoice): GameResult = choice match {
-    case _ => Lose
+    case _ => Forfeit
   }
 }
