@@ -1,9 +1,9 @@
 package models
 
 object ComputerMove {
-  val rnd: Int = scala.util.Random.nextInt(5)
 
-  def apply(rnd: Int = 2): Move = {
+  def apply(): Move = {
+    val rnd: Int = scala.util.Random.nextInt(5)
     rnd match {
       case 0 => Rock
       case 1 => Paper
